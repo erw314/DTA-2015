@@ -35,6 +35,13 @@ class Trip:
 	def interval_absolute_acceleration(self):
 		return None
 
+	def total_absolute_acceleration(self):
+		return None
+
+	def scale_coordinates(self, scale_factor):
+		return [(scale_factor*coord[0], scale_factor*coord[1]) for coord in coordinates]
+
+
 	# Rotate counterclockwise the coordinates of a trip by a specified angle in radians
 	def rotate_coordinates(self, angle):	
 
@@ -70,3 +77,4 @@ print trip.interval_average_speed(1,2)
 print trip.total_average_speed()
 #print trip.plot()
 print trip.rotate_coordinates(math.pi/3)
+print trip.scale_coordinates(2)
