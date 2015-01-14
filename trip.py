@@ -13,6 +13,7 @@ class Trip:
 		self.rotated_coordinates = None # ensures that trip ends on x axis
 
 	def plot(self):
+		#plt.figure(figsize=(10, 10))
 		plt.plot(self.x_coordinates, self.y_coordinates, 'ro-')
 		plt.show()
 
@@ -39,7 +40,7 @@ class Trip:
 		return None
 
 	def scale_coordinates(self, scale_factor):
-		return [(scale_factor*coord[0], scale_factor*coord[1]) for coord in coordinates]
+		return [(scale_factor*coord[0], scale_factor*coord[1]) for coord in self.coordinates]
 
 
 	# Rotate counterclockwise the coordinates of a trip by a specified angle in radians
@@ -55,15 +56,17 @@ class Trip:
 		return map(lambda coord : rotate(coord[0], coord[1], angle), self.coordinates)	
 			
 
-
-
-
-'''
+	def rotate_coordinates_to_positive_x_axis(self):
 		last_x, last_y = self.x_coordinates[-1], self.y_coordinates[-1]	
 		# angle to rotate the point (last_x, last_y) counterclockwise so that the point lies on the positive x axis
-		angle_to_x_axis = -math.atan2(last_y, last_x)
-'''
+		angle_to_x_axis = -math.atan2(last_y, last_x)		
+		rotated_coordinates = self.rotate_coordinates(angle_to_x_axis)
+		rotated_coordinates[-1] = (rotated_coordinates[-1][0], 0) # avoid floating point imprecision
+		return rotated_coordinates
 
+
+
+'''
 coordinates = [(0,0), (3,4), (4,5)]
 trip = Trip(0, coordinates)
 print trip.driver 
@@ -78,3 +81,6 @@ print trip.total_average_speed()
 #print trip.plot()
 print trip.rotate_coordinates(math.pi/3)
 print trip.scale_coordinates(2)
+trip2 = Trip(2, trip.rotate_coordinates_to_positive_x_axis())
+print trip2.plot()
+'''

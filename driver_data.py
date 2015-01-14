@@ -1,6 +1,6 @@
 import json
+from trip import Trip
 
-# 
 
 def getAllDriverData():
 	file = open('~/driverData.json', 'r')
@@ -12,5 +12,10 @@ def getAllTripsFromDriver():
 
 # Returns specified drives from a driver
 def getTripsFromDriver(driver_number, trip_indices):
+	return None
 
 # make Trip object
+coordinates = [(0,0), (3,4), (4,5)]
+trip = Trip(0, coordinates)
+print trip.driver 
+
