@@ -7,27 +7,40 @@ import numpy as np
 class Trip:
 	# coordinates - list of tuples of floats, where first is (0,0)
 	def __init__(self, driver, coordinates):
-		self.driver = driver
+		self.driver = driver # driver ID
 		self.total_seconds = len(coordinates) - 1
-		self.x_coordinates = [coordinate[0] for coordinate in coordinates]
-		self.y_coordinates = [coordinate[1] for coordinate in coordinates]
+		self.x_coordinates = [float(coordinate[0]) for coordinate in coordinates]
+		self.y_coordinates = [float(coordinate[1]) for coordinate in coordinates]
 
-		self.coordinates = coordinates
+		# Length of the vector (x,y) using Euclidean distance
+		def norm((x, y)):
+			return math.sqrt(x**2 + y**2)
+
+		self.coordinates = zip(self.x_coordinates, self.y_coordinates) # ensure that entries are pairs of floats
+		self.velocities = self.discrete_vector_derivative(self.coordinates)
 		# Speed at every point in time, where the i-th entry is the average speed between time i and i+1
-		self.speeds = [self.interval_distance(i, i+1) for i in range(self.total_seconds)]
+		self.speeds = map(norm, self.velocities)
+		self.accelerations = self.discrete_vector_derivative(self.velocities)		
 		# Absolute acceleration at every point in time, where the i-th entry is the absolute acceleration between time i and i+2
-		self.absolute_accelerations = self.discrete_derivative(self.speeds)
+		self.absolute_accelerations = map(norm, self.accelerations)
 
-		self.radius = math.sqrt(self.x_coordinates[-1]**2 + self.y_coordinates[-1]**2) # distance from last point on trip to origin
+	# Length of the vector (x,y) using Euclidean distance
+	def norm(self, (x, y)):
+		return math.sqrt(x**2 + y**2)
 
 	# Takes the discrete derivative of data_list, a list of floats. Requires that data_list has at least two elements.
 	def discrete_derivative(self, data_list):
 		assert len(data_list) >= 2
 		return [data_list[i+1] - data_list[i] for i in range(len(data_list) - 1)]
 
+	# Takes the discrete derivative of vector_list, a list of tuples (x, y). Requires that vector_list has at least two elements.
+	def discrete_vector_derivative(self, vector_list):
+		assert len(vector_list) >= 2
+		x_coordinates = [vector[0] for vector in vector_list]
+		y_coordinates = [vector[1] for vector in vector_list]
+		return zip(self.discrete_derivative(x_coordinates), self.discrete_derivative(y_coordinates))
 
 	def plot(self):
-		#plt.figure(figsize=(10, 10))
 		plt.plot(self.x_coordinates, self.y_coordinates, 'ro-')
 		plt.show()
 
@@ -52,6 +65,11 @@ class Trip:
 	def total_distance(self):
 		return self.interval_distance(0, self.total_seconds)
 
+	# Returns each velocity in the time interval [start_time, end_time]
+	def interval_velocities(self, start_time, end_time):
+		return self.velocities[start_time:end_time + 1]
+
+
 
 	# Average speed in the time interval [start_time, end_time]. At time 0 the driver is at the origin.
 	# Requires 0 <= start_time < end_time <= total_seconds
@@ -64,24 +82,27 @@ class Trip:
 	def total_average_speed(self):
 		return self.interval_average_speed(0, self.total_seconds)
 
-	# Absolute value of acceleration in the time interval [start_time, end_time]. At time 0 the driver is at the origin.
-	# Requires start_time <= end_time - 2
-	# start_time: time in seconds to begin calculating absolute acceleration
-	# end_time: time in seconds to stop calculating absolute acceleration
-	def interval_absolute_acceleration(self, start_time, end_time):
-		return abs(self.speeds[end_time - 1] - self.speeds[start_time]) / (end_time - start_time)
+	# Returns each acceleration in the time interval [start_time, end_time]
+	def interval_accelerations(self, start_time, end_time):
+		return self.accelerations[start_time:end_time + 1]
 
-	# Average acceleration of the entire trip.
+
+	# Average acceleration in the time interval [start_time, end_time]. At time 0 the driver is at the origin.
+	# Requires start_time <= end_time - 2 
+	def interval_acceleration(self, start_time, end_time):
+		t = end_time - start_time - 1
+		return ((self.velocities[end_time-1][0] - self.velocities[start_time][0]) / t, (self.velocities[end_time-1][1] - self.velocities[start_time][1]) / t)
+
+	def interval_absolute_acceleration(self, start_time, end_time):
+		return self.norm(self.interval_acceleration(start_time, end_time))
+
+	# Average absolute acceleration of the entire trip.
 	def total_absolute_acceleration(self):
 		return self.interval_absolute_acceleration(0, self.total_seconds)
 
-	# Max absolute acceleration in the time interval [start_time, end_time]. 
-	def max_interval_absolute_acceleration(self, start_time, end_time):
-		return max(absolute_accelerations[start_time:end_time - 1])
-
 	# Max absolute acceleration over the entire trip
 	def max_absolute_acceleration(self):
-		return None
+		return max(self.absolute_accelerations)
 
 
 
@@ -91,14 +112,10 @@ class Trip:
 coordinates = [(0,0), (3,4), (4,5), (9, 17), (-1, -3), (2, -2), (0,0), (-5, -5)]
 trip = Trip(0, coordinates)
 
-print trip.total_time()
-print trip.speeds
+print trip.velocities
+print trip.accelerations
 print trip.absolute_accelerations
-print trip.interval_absolute_acceleration(0,3)
-print trip.interval_absolute_acceleration(1,3)
-print trip.total_absolute_acceleration()
-print trip.plot()
-
+print trip.max_absolute_acceleration()
 
 '''
 print trip.driver 
