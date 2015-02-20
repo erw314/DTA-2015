@@ -81,6 +81,7 @@ class Trip:
 
 	# Max absolute acceleration over the entire trip
 	def max_absolute_acceleration(self):
+		return None
 
 
 
