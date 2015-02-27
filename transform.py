@@ -35,3 +35,18 @@ def normalize(coordinates):
 		return coordinates
 	rotated_coordinates_trip = rotate_x_axis(coordinates)
 	return scale(rotated_coordinates_trip, 1.0/np.sqrt(last_x**2+last_y**2))
+	
+# Reflects the trip across the line created by starting point and endpoint
+def reflect(coordinates):
+	reflected = []
+	x_1, y_1, x_2, y_2 = coordinates[0][0], coordinates[0][1], coordinates[-1][0], coordinates[-1][1]
+	a = (y_2-y_1)/(x_2-x_1)
+	b = (y_1*x_2-x_1*y_2)/(x_2-x_1)
+	for n in coordinates:
+		x, y = n[0], n[1]
+		d = (x+(y-b)*a)/(1+a**2)
+		p_1 = 2*d-x
+		p_2 = 2*d*a-y+2*b
+		reflected.append((p_1, p_2))
+	return reflected
+		
