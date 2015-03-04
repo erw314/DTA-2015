@@ -124,8 +124,8 @@ class Trip:
 
 
 #coordinates = [(0,0), (3, 4), (8,16)]
-coordinates = [(0,0), (3,4), (3,3.5), (9, 17), (-1, -3), (2, 2), (1.7, 1.8), (1, 2)]
-trip = Trip(0, coordinates)
+#coordinates = [(0,0), (3,4), (3,3.5), (9, 17), (-1, -3), (2, 2), (1.7, 1.8), (1, 2)]
+#trip = Trip(0, coordinates)
 
 #print trip.velocities
 #print trip.speeds
