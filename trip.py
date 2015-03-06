@@ -2,12 +2,11 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-# figure out speeds vs velocities vs abs acclerations
-
 class Trip:
 	# coordinates - list of tuples of floats, where first is (0,0)
-	def __init__(self, driver, coordinates):
+	def __init__(self, driver, trip_ID, coordinates):
 		self.driver = driver # driver ID
+		self.trip_ID = trip_ID 
 		self.total_seconds = len(coordinates) - 1
 		self.x_coordinates = [float(coordinate[0]) for coordinate in coordinates]
 		self.y_coordinates = [float(coordinate[1]) for coordinate in coordinates]
@@ -70,7 +69,6 @@ class Trip:
 		return self.velocities[start_time:end_time + 1]
 
 
-
 	# Average speed in the time interval [start_time, end_time]. At time 0 the driver is at the origin.
 	# Requires 0 <= start_time < end_time <= total_seconds
 	# start_time: time in seconds to begin calculating speed
@@ -81,6 +79,10 @@ class Trip:
 	# Average speed of the entire trip.
 	def total_average_speed(self):
 		return self.interval_average_speed(0, self.total_seconds)
+
+	# Max speed over the entire trip
+	def max_speed(self):
+		return max(self.speeds)
 
 	# Returns each acceleration in the time interval [start_time, end_time]
 	def interval_accelerations(self, start_time, end_time):
@@ -104,18 +106,30 @@ class Trip:
 	def max_absolute_acceleration(self):
 		return max(self.absolute_accelerations)
 
+	# Maximum acceleration after all stoppages (defined as having a speed of less than 1)
+	def max_abs_acceleration_after_stop(self):
+		stop_speed_cutoff = 0.5 # if the speed is less than this value then the car has stopped
+		accelerations_after_stop = []
+		for i in range(len(self.absolute_accelerations)):
+			if self.speeds[i] < stop_speed_cutoff:
+				accelerations_after_stop.append(self.absolute_accelerations[i])
 
+		# No stoppages found
+		if len(accelerations_after_stop) == 0:
+			return 0
+
+		return max(accelerations_after_stop)
 
 
 
 #coordinates = [(0,0), (3, 4), (8,16)]
-coordinates = [(0,0), (3,4), (4,5), (9, 17), (-1, -3), (2, -2), (0,0), (-5, -5)]
-trip = Trip(0, coordinates)
+#coordinates = [(0,0), (3,4), (3,3.5), (9, 17), (-1, -3), (2, 2), (1.7, 1.8), (1, 2)]
+#trip = Trip(0, coordinates)
 
-print trip.velocities
-print trip.accelerations
-print trip.absolute_accelerations
-print trip.max_absolute_acceleration()
+#print trip.velocities
+#print trip.speeds
+#print trip.max_speed()
+#print trip.max_abs_acceleration_after_stop()
 
 '''
 print trip.driver 
