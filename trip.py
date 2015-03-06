@@ -2,12 +2,11 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-# figure out speeds vs velocities vs abs acclerations
-
 class Trip:
 	# coordinates - list of tuples of floats, where first is (0,0)
-	def __init__(self, driver, coordinates):
+	def __init__(self, driver, trip_ID, coordinates):
 		self.driver = driver # driver ID
+		self.trip_ID = trip_ID 
 		self.total_seconds = len(coordinates) - 1
 		self.x_coordinates = [float(coordinate[0]) for coordinate in coordinates]
 		self.y_coordinates = [float(coordinate[1]) for coordinate in coordinates]
@@ -109,7 +108,7 @@ class Trip:
 
 	# Maximum acceleration after all stoppages (defined as having a speed of less than 1)
 	def max_abs_acceleration_after_stop(self):
-		stop_speed_cutoff = 1 # if the speed is less than this value then the car has stopped
+		stop_speed_cutoff = 0.5 # if the speed is less than this value then the car has stopped
 		accelerations_after_stop = []
 		for i in range(len(self.absolute_accelerations)):
 			if self.speeds[i] < stop_speed_cutoff:
