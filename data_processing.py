@@ -6,7 +6,7 @@ import cPickle as pickle
 from trip import Trip
 
 # trips - Data set of n Trip objects
-# returns list of n d-dimensional feature vectors, each represented as a list
+# Returns list of n d-dimensional feature vectors, each represented as a list
 def extract_feature_vectors(trips):
 	d = 5 # number of features
 	feature_vectors = []
@@ -22,11 +22,12 @@ def extract_feature_vectors(trips):
 
 	return feature_vectors
 
+
+
+
 # trips - Data set of n Trip objects
-# returns list of n d-dimensional feature vectors, each represented as a list
-# where we have normalized the feature vectors for a radial basis function SVM
-# such that the values for each feature have mean 0 and standard deviation 1
+# Returns n x d numpy array where there are d features and we have normalized 
+# the feature vectors for a radial basis function SVM such that the values 
+# for each feature have mean 0 and standard deviation 1
 def extract_normalized_feature_vectors(trips):
 	return preprocessing.scale(extract_feature_vectors(trips))
-
-
