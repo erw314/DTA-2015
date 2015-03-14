@@ -6,9 +6,12 @@ import cPickle as pickle
 from trip import Trip
 import os
 
-# trips - Data set of n Trip objects
-# Returns list of n d-dimensional feature vectors, each represented as a list
+
 def extract_feature_vectors(trips):
+    '''
+    input list of n Trip objects
+    returns list of n d-dimensional feature vectors
+    '''
 	d = 5 # number of features
 	feature_vectors = []
 	for trip in trips:
@@ -24,13 +27,12 @@ def extract_feature_vectors(trips):
 	return feature_vectors
 
 
-
-
-# trips - Data set of n Trip objects
-# Returns n x d numpy array where there are d features and we have normalized 
-# the feature vectors for a radial basis function SVM such that the values 
-# for each feature have mean 0 and standard deviation 1
 def extract_normalized_feature_vectors(trips):
+    '''
+    input list of n Trip objects
+    returns n by d numpy array with d normalized features for radial basis SVM
+    normalized with mean 0, s.d. 1
+    '''
 	return preprocessing.scale(extract_feature_vectors(trips))
     
 
@@ -72,3 +74,21 @@ def label_trips(true_matrix, false_matrix):
     true_labels = [1 for i in range(len(true_matrix))]
     false_labels = [-1 for i in range(len(false_matrix))]
     return true_labels, false_labels
+    
+    
+def distance(trip1, trip2):
+    '''
+    input two trip objects
+    returns distance between trips, either itself or reflected (Mahalanobis distance)
+    '''
+    path1, path2 = trip1.coordinates, trip2.coordinates
+    if len(path1) > len(path2):
+        for i in range(len(path1)-len(path2)):
+            path2.append(path2[-1])
+    if len(path1) < len(path2):
+        for i in range(len(path2)-len(path1)):
+            path1.append(path1[-1])
+    distance = sum([((path1[i][0]-path2[i][0])**2+(path1[i][1]-path2[i][1])**2)**0.5 for i in range(len(path1))])
+    path1 = tf.reflect(path1)
+    distanceR = sum([((path1[i][0]-path2[i][0])**2+(path1[i][1]-path2[i][1])**2)**0.5 for i in range(len(path1))])
+    return min(distance,distanceR)
