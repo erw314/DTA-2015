@@ -7,7 +7,7 @@ import cPickle as pickle
 
 driver_names = [name for name in os.listdir('../drivers')]
 
-#2736 = 18*8*19 total driver files, which is why we have 19 json files
+#2736 = 57*48 total driver files, which is why we have 57 pickle files
 num_drivers = 2736
 num_files = 57
 num_drives_per_driver = 200
