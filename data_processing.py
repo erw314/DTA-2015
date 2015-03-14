@@ -5,6 +5,7 @@ from sklearn import preprocessing
 import cPickle as pickle
 from trip import Trip
 import os
+from sklearn.svm import SVC
 
 
 def extract_feature_vectors(trips):
@@ -12,19 +13,19 @@ def extract_feature_vectors(trips):
     input list of n Trip objects
     returns list of n d-dimensional feature vectors
     '''
-	d = 5 # number of features
-	feature_vectors = []
-	for trip in trips:
-		feature_vector = [0 for i in range(d)]
-		feature_vector[0] = trip.max_speed()
-		feature_vector[1] = trip.total_average_speed()
-		feature_vector[2] = trip.max_absolute_acceleration()
-		feature_vector[3] = trip.total_absolute_acceleration()
-		feature_vector[4] = trip.max_abs_acceleration_after_stop()
+    d = 5 # number of features
+    feature_vectors = []
+    for trip in trips:
+    	feature_vector = [0 for i in range(d)]
+    	feature_vector[0] = trip.max_speed()
+    	feature_vector[1] = trip.total_average_speed()
+    	feature_vector[2] = trip.max_absolute_acceleration()
+    	feature_vector[3] = trip.total_absolute_acceleration()
+    	feature_vector[4] = trip.max_abs_acceleration_after_stop()
 
-		feature_vectors.append(feature_vector)
+    	feature_vectors.append(feature_vector)
 
-	return feature_vectors
+    return feature_vectors
 
 
 def extract_normalized_feature_vectors(trips):
@@ -33,8 +34,27 @@ def extract_normalized_feature_vectors(trips):
     returns n by d numpy array with d normalized features for radial basis SVM
     normalized with mean 0, s.d. 1
     '''
-	return preprocessing.scale(extract_feature_vectors(trips))
+    return preprocessing.scale(extract_feature_vectors(trips))
     
+def run_SVM(training_trips, labels, c, test_trips):
+    '''
+    training_trips - list of n Trip objects
+    labels - n labels corresponding to the trips
+    test_trips - list of m Trip objects
+    Returns list of m probabilities using an SVM with the radial basis function kernel, 
+    where the i-th probability is the certainty of the i-th test trip to have a positive label
+    '''
+    # Convert training and test data to normalized feature vectors
+    normalized_training_feature_vectors = extract_normalized_feature_vectors(training_trips)
+    normalized_test_feature_vectors = extract_normalized_feature_vectors(test_trips)
+
+    # Train SVM
+    svm = SVC(C=c, kernel = 'rbf', probability = True)
+    svm.fit(normalized_training_feature_vectors, labels)
+
+    return map(lambda x : x[1], svm.predict_proba(normalized_test_feature_vectors)) 
+
+    #svm.predict(normalized_test_feature_vectors), svm.score(normalized_training_feature_vectors, labels)
 
 def get_false_trips(samples, not_driver):
     '''
@@ -92,3 +112,5 @@ def distance(trip1, trip2):
     path1 = tf.reflect(path1)
     distanceR = sum([((path1[i][0]-path2[i][0])**2+(path1[i][1]-path2[i][1])**2)**0.5 for i in range(len(path1))])
     return min(distance,distanceR)
+
+
