@@ -6,6 +6,7 @@ import cPickle as pickle
 from trip import Trip
 import transform as tf
 import os
+from sklearn.svm import SVC
 
 
 def extract_feature_vectors(trips):
@@ -36,6 +37,25 @@ def extract_normalized_feature_vectors(trips):
     '''
     return preprocessing.scale(extract_feature_vectors(trips))
     
+def run_SVM(training_trips, labels, c, test_trips):
+    '''
+    training_trips - list of n Trip objects
+    labels - n labels corresponding to the trips
+    test_trips - list of m Trip objects
+    Returns list of m probabilities using an SVM with the radial basis function kernel, 
+    where the i-th probability is the certainty of the i-th test trip to have a positive label
+    '''
+    # Convert training and test data to normalized feature vectors
+    normalized_training_feature_vectors = extract_normalized_feature_vectors(training_trips)
+    normalized_test_feature_vectors = extract_normalized_feature_vectors(test_trips)
+
+    # Train SVM
+    svm = SVC(C=c, kernel = 'rbf', probability = True)
+    svm.fit(normalized_training_feature_vectors, labels)
+
+    return map(lambda x : x[1], svm.predict_proba(normalized_test_feature_vectors)) 
+
+    #svm.predict(normalized_test_feature_vectors), svm.score(normalized_training_feature_vectors, labels)
 
 def get_false_trips(samples, not_driver):
     '''
@@ -93,3 +113,5 @@ def distance(trip1, trip2):
     path1 = tf.reflect(path1)
     distanceR = np.mean([((path1[i][0]-path2[i][0])**2+(path1[i][1]-path2[i][1])**2)**0.5 for i in range(len(path1))])
     return min(distance,distanceR)
+
+
