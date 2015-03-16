@@ -50,7 +50,7 @@ class Trip:
 	# Total time spent stopped
 	def total_time_stopped(self):
 		stop_speed_cutoff = 0.5 # if the speed is less than this value then the car has stopped
-                return sum([1 for i in self.speeds if self.speeds < stop_speed_cutoff])
+                return sum([1 for i in self.speeds if i < stop_speed_cutoff])
 
         # Fraction of time spent stopped
         def frac_time_stopped(self):
