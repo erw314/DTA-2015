@@ -47,6 +47,15 @@ class Trip:
 	def total_time(self):
 		return self.total_seconds
 
+	# Total time spent stopped
+	def total_time_stopped(self):
+		stop_speed_cutoff = 0.5 # if the speed is less than this value then the car has stopped
+                return sum([1 for i in self.speeds if self.speeds < stop_speed_cutoff])
+
+        # Fraction of time spent stopped
+        def frac_time_stopped(self):
+                return 1.0*total_time_stopped()/total_time()
+
 	# divide trip into "segments", ex highway local
 	# how much the driver turns
 
@@ -80,9 +89,19 @@ class Trip:
 	def total_average_speed(self):
 		return self.interval_average_speed(0, self.total_seconds)
 
+	# Average speed of the entire trip, not including stops.
+	def average_speed_no_stops(self):
+                stop_speed_cutoff = 0.5 # if the speed is less than this value then the car has stopped
+		sum_speeds = sum([self.speeds[i] for i in range(len(speeds)) if self.speeds[i] < stop_speed_cutoff])
+		return sum_speeds/(self.total_time()-self.total_time_stopped())
+
 	# Max speed over the entire trip
 	def max_speed(self):
 		return max(self.speeds)
+
+	# Standard deviation of speeds
+	def std_speed(self):
+		return np.std(self.speeds)
 
 	# Returns each acceleration in the time interval [start_time, end_time]
 	def interval_accelerations(self, start_time, end_time):
@@ -105,6 +124,10 @@ class Trip:
 	# Max absolute acceleration over the entire trip
 	def max_absolute_acceleration(self):
 		return max(self.absolute_accelerations)
+
+	# Standard deviation of absolute accelerations
+	def std_absolute_acceleration(self):
+		return np.std(self.absolute_accelerations)
 
 	# Maximum acceleration after all stoppages (defined as having a speed of less than 1)
 	def max_abs_acceleration_after_stop(self):
