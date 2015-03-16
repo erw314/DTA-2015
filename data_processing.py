@@ -14,7 +14,7 @@ def extract_feature_vectors(trips):
     input list of n Trip objects
     returns list of n d-dimensional feature vectors
     '''
-    d = 5 # number of features
+    d = 9 # number of features
     feature_vectors = []
     for trip in trips:
         feature_vector = [0 for i in range(d)]
@@ -23,6 +23,10 @@ def extract_feature_vectors(trips):
         feature_vector[2] = trip.max_absolute_acceleration()
         feature_vector[3] = trip.total_absolute_acceleration()
         feature_vector[4] = trip.max_abs_acceleration_after_stop()
+        feature_vector[5] = trip.std_speed()
+        feature_vector[6] = trip.std_absolute_acceleration()
+        feature_vector[7] = trip.frac_time_stopped()
+        feature_vector[8] = trip.average_speed_no_stops()
 
         feature_vectors.append(feature_vector)
 
