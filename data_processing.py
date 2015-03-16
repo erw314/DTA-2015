@@ -67,7 +67,6 @@ def get_false_trips(samples, not_driver):
     for n in os.listdir('./'):
         if n[:11] == 'driverData_' and n[11:] != str(int(not_driver)/48)+'.p' and n[11:] != 'small.p': 
             files.append(n)
-    print files
     data_file = np.random.choice(files)
     
     with open(data_file, 'r') as f:
@@ -92,8 +91,8 @@ def label_trips(true_matrix, false_matrix):
     input correct matrix, and incorrect matrix
     returns two lists of labels for the matrices
     '''
-    true_labels = [1 for i in range(len(true_matrix))]
-    false_labels = [-1 for i in range(len(false_matrix))]
+    true_labels = np.array([1 for i in range(len(true_matrix))])
+    false_labels = np.array([-1 for i in range(len(false_matrix))])
     return true_labels, false_labels
     
     
