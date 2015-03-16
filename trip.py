@@ -54,7 +54,7 @@ class Trip:
 
         # Fraction of time spent stopped
         def frac_time_stopped(self):
-                return 1.0*total_time_stopped()/total_time()
+                return 1.0*self.total_time_stopped()/self.total_time()
 
 	# divide trip into "segments", ex highway local
 	# how much the driver turns
